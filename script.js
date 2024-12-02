@@ -10,8 +10,8 @@ const ballRadius = 10;
 
 // Paddle settings
 const paddleHeight = 10;
-const paddleWidth = 75;
-let paddleX = (canvas.width - paddleWidth) / 2;
+const paddleWidth = 100; // Increased width for better playability
+let paddleX = (canvas.width - paddleWidth) / 2; // Start in the middle
 let rightPressed = false;
 let leftPressed = false;
 
@@ -28,11 +28,11 @@ let bricks = [];
 for (let c = 0; c < brickColumnCount; c++) {
     bricks[c] = [];
     for (let r = 0; r < brickRowCount; r++) {
-        bricks[c][r] = { x: 0, y: 0, status: 1 };
+        bricks[c][r] = { x: 0, y: 0, status: 1 }; // Status 1 means brick is visible
     }
 }
 
-// Event listeners
+// Event listeners for paddle movement
 document.addEventListener("keydown", keyDownHandler);
 document.addEventListener("keyup", keyUpHandler);
 
@@ -94,7 +94,7 @@ function collisionDetection() {
                     ballY < brick.y + brickHeight
                 ) {
                     ballDY = -ballDY;
-                    brick.status = 0;
+                    brick.status = 0; // Mark brick as broken
                 }
             }
         }
@@ -103,36 +103,42 @@ function collisionDetection() {
 
 // Game loop
 function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
 
     drawBricks();
     drawBall();
     drawPaddle();
     collisionDetection();
 
+    // Ball collision with walls
     if (ballX + ballDX > canvas.width - ballRadius || ballX + ballDX < ballRadius) {
         ballDX = -ballDX;
     }
     if (ballY + ballDY < ballRadius) {
         ballDY = -ballDY;
     } else if (ballY + ballDY > canvas.height - ballRadius) {
+        // Ball hits the bottom
         if (ballX > paddleX && ballX < paddleX + paddleWidth) {
-            ballDY = -ballDY;
+            ballDY = -ballDY; // Bounce the ball back
         } else {
+            alert("GAME OVER");
             document.location.reload(); // Restart the game
         }
     }
 
+    // Paddle movement
     if (rightPressed && paddleX < canvas.width - paddleWidth) {
-        paddleX += 7;
+        paddleX += 7; // Move right
     } else if (leftPressed && paddleX > 0) {
-        paddleX -= 7;
+        paddleX -= 7; // Move left
     }
 
+    // Move the ball
     ballX += ballDX;
     ballY += ballDY;
 
-    requestAnimationFrame(draw);
+    requestAnimationFrame(draw); // Redraw the frame
 }
 
+// Start the game loop
 draw();
