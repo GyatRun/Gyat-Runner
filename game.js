@@ -1,4 +1,3 @@
-
 const config = {
   type: Phaser.AUTO,
   width: 800,
@@ -7,8 +6,8 @@ const config = {
   physics: {
     default: 'arcade',
     arcade: {
-      gravity: { y: 300 },
-      debug: false,
+      gravity: { y: 300 }, // Gravity for the game world
+      debug: false,        // Turn this to true to see hitboxes for debugging
     },
   },
   scene: {
@@ -18,23 +17,24 @@ const config = {
   },
 };
 
+// Initialize the game
 const game = new Phaser.Game(config);
 
 let player;
 let cursors;
-let tokens;
+let ground;
 let obstacles;
+let tokens;
 let score = 0;
 let scoreText;
 
-let ground;
-
 function preload() {
+  // Load assets
   this.load.image('background', 'assets/background.png');
   this.load.image('player', 'assets/character.png');
   this.load.image('obstacle', 'assets/obstacle.png');
   this.load.image('token', 'assets/token.png');
-  this.load.image('ground', 'assets/ground.png'); // Ground asset
+  this.load.image('ground', 'assets/ground.png'); // Add a ground image
 }
 
 function create() {
@@ -48,6 +48,9 @@ function create() {
   // Player
   player = this.physics.add.sprite(100, 300, 'player').setScale(0.5);
   player.setCollideWorldBounds(true);
+
+  // Input Controls
+  cursors = this.input.keyboard.createCursorKeys();
 
   // Obstacles
   obstacles = this.physics.add.group();
@@ -74,28 +77,29 @@ function create() {
   });
 
   // Collisions
-  this.physics.add.collider(player, ground);
-  this.physics.add.collider(obstacles, ground);
-  this.physics.add.collider(tokens, ground);
+  this.physics.add.collider(player, ground); // Player collides with ground
+  this.physics.add.collider(obstacles, ground); // Obstacles stop on the ground
+  this.physics.add.collider(tokens, ground); // Tokens stop on the ground
 
   // Score
   scoreText = this.add.text(10, 10, 'Score: 0', { fontSize: '20px', fill: '#fff' });
 }
 
 function update() {
-  if (cursors.up.isDown && player.body.touching.down) {
-    player.setVelocityY(-300);
+  // Reset horizontal velocity
+  player.setVelocityX(0);
+
+  // Horizontal movement
+  if (cursors.left.isDown) {
+    player.setVelocityX(-160); // Move left
+    player.flipX = true; // Flip sprite to face left
+  } else if (cursors.right.isDown) {
+    player.setVelocityX(160); // Move right
+    player.flipX = false; // Face right
   }
-}
 
-
-function collectToken(player, token) {
-  token.destroy();
-  score += 10;
-  scoreText.setText(`Score: ${score}`);
-}
-
-function gameOver() {
-  this.scene.restart();
-  score = 0;
+  // Jumping
+  if (cursors.up.isDown && player.body.touching.down) {
+    player.setVelocityY(-300); // Jump
+  }
 }
