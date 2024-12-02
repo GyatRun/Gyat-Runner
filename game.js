@@ -27,16 +27,23 @@ let obstacles;
 let score = 0;
 let scoreText;
 
+let ground;
+
 function preload() {
-  this.load.image('background', 'https://via.placeholder.com/800x400');
-  this.load.image('player', 'https://via.placeholder.com/100');
-  this.load.image('obstacle', 'https://via.placeholder.com/50x50');
-  this.load.image('token', 'https://via.placeholder.com/25x25');
+  this.load.image('background', 'assets/background.png');
+  this.load.image('player', 'assets/character.png');
+  this.load.image('obstacle', 'assets/obstacle.png');
+  this.load.image('token', 'assets/token.png');
+  this.load.image('ground', 'assets/ground.png'); // Ground asset
 }
 
 function create() {
   // Background
   this.add.image(400, 200, 'background').setScrollFactor(1, 0);
+
+  // Ground
+  ground = this.physics.add.staticGroup();
+  ground.create(400, 390, 'ground').setScale(2).refreshBody();
 
   // Player
   player = this.physics.add.sprite(100, 300, 'player').setScale(0.5);
@@ -50,6 +57,7 @@ function create() {
     callback: () => {
       const obstacle = obstacles.create(800, 350, 'obstacle');
       obstacle.setVelocityX(-200);
+      obstacle.body.setAllowGravity(false); // Prevent gravity
     },
   });
 
@@ -61,18 +69,17 @@ function create() {
     callback: () => {
       const token = tokens.create(800, Phaser.Math.Between(200, 350), 'token');
       token.setVelocityX(-200);
+      token.body.setAllowGravity(false); // Prevent gravity
     },
   });
 
+  // Collisions
+  this.physics.add.collider(player, ground);
+  this.physics.add.collider(obstacles, ground);
+  this.physics.add.collider(tokens, ground);
+
   // Score
   scoreText = this.add.text(10, 10, 'Score: 0', { fontSize: '20px', fill: '#fff' });
-
-  // Collisions
-  this.physics.add.collider(player, obstacles, gameOver, null, this);
-  this.physics.add.overlap(player, tokens, collectToken, null, this);
-
-  // Controls
-  cursors = this.input.keyboard.createCursorKeys();
 }
 
 function update() {
@@ -80,6 +87,7 @@ function update() {
     player.setVelocityY(-300);
   }
 }
+
 
 function collectToken(player, token) {
   token.destroy();
