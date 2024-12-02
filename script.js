@@ -10,8 +10,8 @@ const ballRadius = 10;
 
 // Paddle settings
 const paddleHeight = 10;
-const paddleWidth = 100; // Increased width for better playability
-let paddleX = (canvas.width - paddleWidth) / 2; // Start in the middle
+const paddleWidth = 150; // Increased width for easier gameplay
+let paddleX = (canvas.width - paddleWidth) / 2;
 let rightPressed = false;
 let leftPressed = false;
 
@@ -21,8 +21,8 @@ const brickColumnCount = 7;
 const brickWidth = 75;
 const brickHeight = 20;
 const brickPadding = 10;
-const brickOffsetTop = 30;
-const brickOffsetLeft = 30;
+const brickOffsetTop = canvas.height / 4; // Bricks start vertically in the middle
+const brickOffsetLeft = (canvas.width - (brickColumnCount * (brickWidth + brickPadding))) / 2; // Horizontally centered
 
 let bricks = [];
 for (let c = 0; c < brickColumnCount; c++) {
